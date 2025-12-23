@@ -1,26 +1,272 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --color-blue: #94eaff;
+    --color-light-100: #e7f2ff;
+    --color-light-200: #bdbdbd;
+    --color-border-dark: #151024;
+    --color-dark-100: #0d161a;
+    --color-dark-200: #182830;
+    --radius: 0.625rem;
+    --background: #030708;
+    --foreground: #ffffff;
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: #59deca;
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-blue: var(--color-blue);
+    --color-light-100: var(--color-light-100);
+    --color-light-200: var(--color-light-200);
+    --color-border-dark: var(--color-border-dark);
+    --color-dark-100: var(--color-dark-100);
+    --color-dark-200: var(--color-dark-200);
+    --font-schibsted-grotesk: var(--font-schibsted-grotesk);
+    --font-martian-mono: var(--font-martian-mono);
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@utility flex-center {
+    @apply flex items-center justify-center;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility text-gradient {
+    @apply to-blue bg-gradient-to-b from-white via-white bg-clip-text font-semibold text-transparent;
+}
+
+@utility glass {
+    @apply bg-[#12121280]/50 rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl border-b border-border-dark;
+}
+
+@utility card-shadow {
+    box-shadow: 0px 4px 40px 0px #00000066;
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+
+    main {
+        @apply mx-auto container flex flex-col sm:px-10 px-5 py-10;
+    }
+
+    h1 {
+        @apply text-gradient text-6xl font-semibold max-sm:text-4xl;
+    }
+
+    h3 {
+        @apply font-schibsted-grotesk text-2xl font-bold;
+    }
+
+    ul {
+        @apply list-disc list-inside;
+    }
+}
+
+@layer components {
+    #home {
+        .subheading {
+            @apply text-light-100 text-lg max-sm:text-sm text-center mt-5;
+        }
+    }
+
+    #explore-btn {
+        @apply border-dark-200 bg-dark-100 flex w-fit cursor-pointer  rounded-full border px-8 py-3.5 max-sm:w-full text-center;
+
+        a {
+            @apply flex-center gap-2 text-center w-full;
+        }
+    }
+
+    header {
+        @apply glass sticky top-0 z-50;
+
+        nav {
+            @apply flex flex-row justify-between mx-auto container sm:px-10 px-5 py-4;
+        }
+
+        .logo {
+            @apply flex flex-row items-center gap-2;
+
+            p {
+                @apply text-xl font-bold italic max-sm:hidden;
+            }
+        }
+
+        ul {
+            @apply flex flex-row items-center gap-6;
+        }
+    }
+
+    .events {
+        @apply grid md:grid-cols-3 gap-10 sm:grid-cols-2 grid-cols-1;
+    }
+
+    #event-card {
+        @apply flex flex-col gap-3;
+
+        .poster {
+            @apply h-[300px] w-full rounded-lg object-cover;
+        }
+
+        .title {
+            @apply text-[20px] font-semibold line-clamp-1;
+        }
+
+        p {
+            @apply text-light-200 text-sm font-light;
+        }
+
+        .datetime {
+            @apply text-light-200 flex flex-row flex-wrap items-center gap-4;
+
+            div {
+                @apply flex flex-row gap-2;
+            }
+        }
+    }
+
+    #event {
+        .header {
+            @apply flex w-2/3 flex-col items-start gap-4 max-lg:w-full mb-10;
+        }
+
+        .details {
+            @apply flex w-full flex-col lg:flex-row gap-12 items-start mt-12 max-lg:items-center;
+
+            .content {
+                @apply flex flex-[2] flex-col gap-8 max-lg:w-full;
+
+                .banner {
+                    @apply max-h-[457px] w-full rounded-lg object-cover;
+                }
+
+                .agenda {
+                    @apply flex flex-col gap-2;
+
+                    ul {
+                        li {
+                            @apply text-light-100 text-lg max-sm:text-sm;
+                        }
+                    }
+                }
+            }
+
+            .booking {
+                @apply flex-1 w-full p-4 border-l border-gray-700;
+
+                .signup-card {
+                    @apply bg-dark-100 border-dark-200 card-shadow flex w-full flex-col gap-6 rounded-[10px] border px-5 py-6;
+                }
+            }
+        }
+
+        h2 {
+            @apply font-schibsted-grotesk text-2xl font-bold;
+        }
+
+        p {
+            @apply text-light-100 text-lg max-sm:text-sm;
+        }
+
+        .flex-col-gap-2 {
+            @apply flex flex-col gap-2;
+        }
+
+        .flex-row-gap-2 {
+            @apply flex flex-row gap-2;
+        }
+    }
+
+    .pill {
+        @apply bg-dark-100 text-light-100 text-xs rounded-[6px] px-5 py-2;
+    }
+
+    #book-event {
+        @apply flex flex-col gap-6;
+
+        form {
+            @apply flex flex-col gap-6;
+
+            div {
+                @apply flex flex-col gap-2;
+
+                input {
+                    @apply bg-dark-200 rounded-[6px] px-5 py-2.5;
+                }
+            }
+
+            button {
+                @apply bg-primary hover:bg-primary/90 w-full cursor-pointer items-center justify-center rounded-[6px] px-4 py-2.5 text-lg font-semibold text-black;
+            }
+        }
+    }
 }
