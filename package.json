@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.8.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.562.0",
+    "mongoose": "^9.0.2",
     "next": "16.1.1",
     "ogl": "^1.0.11",
     "react": "19.2.3",
