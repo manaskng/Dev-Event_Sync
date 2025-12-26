@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Schema, model, models, Document } from 'mongoose';
 
 // TypeScript interface for Event document
@@ -17,20 +16,10 @@ export interface IEvent extends Document {
   agenda: string[];
   organizer: string;
   tags: string[];
-=======
-import { Schema, model, models, Document, Types } from 'mongoose';
-import Event from './event.model';
-
-// TypeScript interface for Booking document
-export interface IBooking extends Document {
-  eventId: Types.ObjectId;
-  email: string;
->>>>>>> c464f47c943e06316569c45028eebebc6810dee4
   createdAt: Date;
   updatedAt: Date;
 }
 
-<<<<<<< HEAD
 const EventSchema = new Schema<IEvent>(
   {
     title: {
@@ -112,27 +101,6 @@ const EventSchema = new Schema<IEvent>(
       validate: {
         validator: (v: string[]) => v.length > 0,
         message: 'At least one tag is required',
-=======
-const BookingSchema = new Schema<IBooking>(
-  {
-    eventId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Event',
-      required: [true, 'Event ID is required'],
-    },
-    email: {
-      type: String,
-      required: [true, 'Email is required'],
-      trim: true,
-      lowercase: true,
-      validate: {
-        validator: function (email: string) {
-          // RFC 5322 compliant email validation regex
-          const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-          return emailRegex.test(email);
-        },
-        message: 'Please provide a valid email address',
->>>>>>> c464f47c943e06316569c45028eebebc6810dee4
       },
     },
   },
@@ -141,51 +109,27 @@ const BookingSchema = new Schema<IBooking>(
   }
 );
 
-<<<<<<< HEAD
 // Pre-save hook for slug generation and data normalization
-EventSchema.pre('save', function (next) {
+EventSchema.pre('save', function () {
   const event = this as IEvent;
 
-  // Generate slug only if title changed or document is new
+  // Generate slug
   if (event.isModified('title') || event.isNew) {
     event.slug = generateSlug(event.title);
   }
 
-  // Normalize date to ISO format if it's not already
+  // Normalize date
   if (event.isModified('date')) {
     event.date = normalizeDate(event.date);
   }
 
-  // Normalize time format (HH:MM)
+  // Normalize time
   if (event.isModified('time')) {
     event.time = normalizeTime(event.time);
-=======
-// Pre-save hook to validate events exists before creating booking
-BookingSchema.pre('save', async function (next) {
-  const booking = this as IBooking;
-
-  // Only validate eventId if it's new or modified
-  if (booking.isModified('eventId') || booking.isNew) {
-    try {
-      const eventExists = await Event.findById(booking.eventId).select('_id');
-
-      if (!eventExists) {
-        const error = new Error(`Event with ID ${booking.eventId} does not exist`);
-        error.name = 'ValidationError';
-        return next(error);
-      }
-    } catch {
-      const validationError = new Error('Invalid events ID format or database error');
-      validationError.name = 'ValidationError';
-      return next(validationError);
-    }
->>>>>>> c464f47c943e06316569c45028eebebc6810dee4
   }
-
-  next();
 });
 
-<<<<<<< HEAD
+
 // Helper function to generate URL-friendly slug
 function generateSlug(title: string): string {
   return title
@@ -240,19 +184,3 @@ EventSchema.index({ date: 1, mode: 1 });
 const Event = models.Event || model<IEvent>('Event', EventSchema);
 
 export default Event;
-=======
-// Create index on eventId for faster queries
-BookingSchema.index({ eventId: 1 });
-
-// Create compound index for common queries (events bookings by date)
-BookingSchema.index({ eventId: 1, createdAt: -1 });
-
-// Create index on email for user booking lookups
-BookingSchema.index({ email: 1 });
-
-// Enforce one booking per events per email
-BookingSchema.index({ eventId: 1, email: 1 }, { unique: true, name: 'uniq_event_email' });
-const Booking = models.Booking || model<IBooking>('Booking', BookingSchema);
-
-export default Booking;
->>>>>>> c464f47c943e06316569c45028eebebc6810dee4
