@@ -4,6 +4,33 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, MapPin, Globe, ExternalLink, ShieldCheck, Tag, Trophy, UserCircle, Clock, ChevronLeft } from "lucide-react";
 
+const getTechFallbackImage = (category?: string, tags?: string[], id?: string): string => {
+  const allTerms = [category, ...(tags || [])].map(t => t?.toLowerCase()).filter(Boolean);
+  const techKeywords: Record<string, string> = {
+    hackathon: "hackathon,coding",
+    "machine learning": "artificial+intelligence,machine+learning",
+    ai: "artificial+intelligence,neural+network",
+    web: "web+development,programming",
+    mobile: "mobile+app,smartphone+development",
+    blockchain: "blockchain,cryptocurrency+tech",
+    cybersecurity: "cybersecurity,hacking",
+    cloud: "cloud+computing,servers",
+    devops: "devops,kubernetes",
+    data: "data+science,analytics",
+    competitive: "competitive+programming,coding+contest",
+    robotics: "robotics,arduino",
+    iot: "internet+of+things,smart+devices",
+  };
+  for (const term of allTerms) {
+    for (const [keyword, query] of Object.entries(techKeywords)) {
+      if (term?.includes(keyword)) return `https://source.unsplash.com/1200x600/?${query}&sig=${id}`;
+    }
+  }
+  const techFallbacks = ["programming,code", "technology,computer", "developer,software", "tech+conference,coding", "open+source,keyboard"];
+  const index = id ? id.charCodeAt(id.length - 1) % techFallbacks.length : 0;
+  return `https://source.unsplash.com/1200x600/?${techFallbacks[index]}&sig=${id}`;
+};
+
 export default async function OpportunityDetails({ params }: { params: Promise<{ id: string }> }) {
   // Await the params object in Next.js 15
   const resolvedParams = await params;
@@ -60,7 +87,7 @@ export default async function OpportunityDetails({ params }: { params: Promise<{
           
           <div className="relative h-64 md:h-80 w-full bg-dark-300">
              <Image 
-                src={image_url || `https://picsum.photos/seed/${id}/1200/600`} 
+                src={image_url || getTechFallbackImage(category, tags, id)} 
                 alt={title} 
                 fill
                 className="object-cover opacity-60"

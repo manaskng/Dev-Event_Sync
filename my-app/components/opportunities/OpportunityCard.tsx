@@ -36,6 +36,48 @@ const getPlatformColor = (platform: string) => {
   }
 };
 
+const getTechFallbackImage = (category?: string, tags?: string[], id?: string): string => {
+  const allTerms = [category, ...(tags || [])].map(t => t?.toLowerCase()).filter(Boolean);
+
+  const techKeywords: Record<string, string> = {
+    hackathon: "hackathon,coding",
+    "machine learning": "artificial+intelligence,machine+learning",
+    ai: "artificial+intelligence,neural+network",
+    web: "web+development,programming",
+    mobile: "mobile+app,smartphone+development",
+    blockchain: "blockchain,cryptocurrency+tech",
+    cybersecurity: "cybersecurity,hacking",
+    cloud: "cloud+computing,servers",
+    devops: "devops,kubernetes",
+    data: "data+science,analytics",
+    open source: "open+source,github",
+    competitive: "competitive+programming,coding+contest",
+    gaming: "game+development,esports+tech",
+    design: "ui+design,ux+design",
+    robotics: "robotics,arduino",
+    iot: "internet+of+things,smart+devices",
+  };
+
+  for (const term of allTerms) {
+    for (const [keyword, query] of Object.entries(techKeywords)) {
+      if (term?.includes(keyword)) {
+        return `https://source.unsplash.com/600x400/?${query}&sig=${id}`;
+      }
+    }
+  }
+
+  // Generic tech fallback (never nature/mountains)
+  const techFallbacks = [
+    "programming,code",
+    "technology,computer",
+    "developer,software",
+    "tech+conference,coding",
+    "open+source,keyboard",
+  ];
+  const index = id ? id.charCodeAt(id.length - 1) % techFallbacks.length : 0;
+  return `https://source.unsplash.com/600x400/?${techFallbacks[index]}&sig=${id}`;
+};
+
 const OpportunityCard = ({ 
   _id, title, description, organizer, source_platform, 
   alternate_sources = [], category, tags = [], location, 
@@ -80,7 +122,7 @@ const OpportunityCard = ({
           {/* Image Section */}
           <div className="relative h-[60%] w-full overflow-hidden bg-dark-300">
              <Image 
-                src={image_url || `https://picsum.photos/seed/${_id}/600/400`} 
+                src={image_url || getTechFallbackImage(category, tags, _id)} 
                 alt={title} 
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
