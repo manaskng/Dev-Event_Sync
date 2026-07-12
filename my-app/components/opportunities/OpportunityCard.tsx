@@ -50,7 +50,7 @@ const getTechFallbackImage = (category?: string, tags?: string[], id?: string): 
     cloud: "cloud+computing,servers",
     devops: "devops,kubernetes",
     data: "data+science,analytics",
-    open source: "open+source,github",
+    "open source": "open+source,github",
     competitive: "competitive+programming,coding+contest",
     gaming: "game+development,esports+tech",
     design: "ui+design,ux+design",
