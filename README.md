@@ -6,11 +6,10 @@
 
 ## 🚀 Engineering Impact & Scale
 
-*   **Microservice Architecture**: A decoupled platform featuring a Next.js 15 SSR frontend (Vercel) and a Python/FastAPI ML & scraping engine (Docker on Render), ensuring independent scaling and zero-downtime deployments.
-*   **Vector Search Optimization**: Migrated from brute-force linear scans to MongoDB Atlas Vector Search (HNSW indexes), reducing semantic query complexity from **O(N) to O(log N)** for sub-20ms nearest-neighbor lookups across 5,000+ embeddings.
-*   **Redis-Optimized Latency**: An integrated Redis caching layer reduced repeated ML inference calls by **~80%**, dropping p95 response times from **~400ms to <80ms**.
-*   **Fault-Tolerant ETL Pipeline**: Scrapes **5 platforms** (Devfolio, Unstop, HackerEarth, MLH, HackerRank) via an async pipeline. Implemented graceful degradation to maintain **100% pipeline uptime** despite aggressive Cloudflare bot-protections.
-*   **Deduplication Engine**: Utilizing composite-key hashing to eliminate **~95% redundant writes** (~1,000+ duplicate payloads/week), reducing database bloat and ensuring pristine training data for downstream ML models.
+*   **Async ETL & Reverse-Engineering**: Engineered a fault-tolerant Python/FastAPI scraping pipeline utilizing **Playwright** and reverse-engineered JSON APIs to ingest **5,000+ opportunities** across 5 platforms.
+*   **Deduplication Engine**: Utilized composite-key hashing to eliminate **~95% of redundant database writes** (~1,000+ duplicate payloads/week), reducing database bloat and ensuring pristine training data for downstream ML models.
+*   **NLP Recommendation Engine**: Developed a hybrid recommendation engine (TF-IDF + Cosine Similarity). Offloaded semantic matching to **MongoDB Atlas Vector Search (HNSW indexes)**, reducing query complexity from **O(N) to O(log N)** for **<50ms** personalized feed generation.
+*   **Distributed Caching (Redis)**: Optimized API read throughput by implementing a Redis caching layer with targeted invalidation policies, dropping p95 ML inference response times from **400ms to <80ms**.
 
 ## 🧠 System Architecture
 
