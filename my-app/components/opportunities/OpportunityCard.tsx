@@ -36,46 +36,45 @@ const getPlatformColor = (platform: string) => {
   }
 };
 
-const getTechFallbackImage = (category?: string, tags?: string[], id?: string): string => {
+const getCategoryGradient = (category?: string, tags?: string[]): string => {
   const allTerms = [category, ...(tags || [])].map(t => t?.toLowerCase()).filter(Boolean);
 
-  const techKeywords: Record<string, string> = {
-    hackathon: "hackathon,coding",
-    "machine learning": "artificial+intelligence,machine+learning",
-    ai: "artificial+intelligence,neural+network",
-    web: "web+development,programming",
-    mobile: "mobile+app,smartphone+development",
-    blockchain: "blockchain,cryptocurrency+tech",
-    cybersecurity: "cybersecurity,hacking",
-    cloud: "cloud+computing,servers",
-    devops: "devops,kubernetes",
-    data: "data+science,analytics",
-    "open source": "open+source,github",
-    competitive: "competitive+programming,coding+contest",
-    gaming: "game+development,esports+tech",
-    design: "ui+design,ux+design",
-    robotics: "robotics,arduino",
-    iot: "internet+of+things,smart+devices",
+  const gradients: Record<string, string> = {
+    hackathon: 'from-indigo-600 to-purple-700',
+    ai: 'from-cyan-600 to-blue-700',
+    'machine learning': 'from-cyan-600 to-blue-700',
+    web: 'from-amber-500 to-orange-600',
+    mobile: 'from-pink-500 to-rose-600',
+    blockchain: 'from-yellow-500 to-amber-600',
+    cybersecurity: 'from-emerald-600 to-green-700',
+    cloud: 'from-sky-500 to-blue-600',
+    devops: 'from-teal-500 to-cyan-600',
+    data: 'from-violet-500 to-purple-600',
+    'open source': 'from-green-500 to-emerald-600',
+    competitive: 'from-red-500 to-rose-600',
+    competition: 'from-red-500 to-orange-600',
+    gaming: 'from-fuchsia-500 to-pink-600',
+    design: 'from-orange-400 to-pink-500',
+    robotics: 'from-slate-500 to-zinc-600',
+    iot: 'from-lime-500 to-green-600',
   };
 
   for (const term of allTerms) {
-    for (const [keyword, query] of Object.entries(techKeywords)) {
-      if (term?.includes(keyword)) {
-        return `https://source.unsplash.com/600x400/?${query}&sig=${id}`;
-      }
+    for (const [keyword, gradient] of Object.entries(gradients)) {
+      if (term?.includes(keyword)) return gradient;
     }
   }
+  return 'from-slate-700 to-zinc-800';
+};
 
-  // Generic tech fallback (never nature/mountains)
-  const techFallbacks = [
-    "programming,code",
-    "technology,computer",
-    "developer,software",
-    "tech+conference,coding",
-    "open+source,keyboard",
-  ];
-  const index = id ? id.charCodeAt(id.length - 1) % techFallbacks.length : 0;
-  return `https://source.unsplash.com/600x400/?${techFallbacks[index]}&sig=${id}`;
+const getCategoryIcon = (category?: string): string => {
+  const icons: Record<string, string> = {
+    hackathon: '⚡', ai: '🤖', 'machine learning': '🧠', web: '🌐',
+    mobile: '📱', blockchain: '⛓️', cybersecurity: '🔒', cloud: '☁️',
+    data: '📊', competitive: '🏆', competition: '🏆', gaming: '🎮',
+    design: '🎨', robotics: '🤖', iot: '📡',
+  };
+  return icons[category?.toLowerCase() || ''] || '💻';
 };
 
 const OpportunityCard = ({ 
@@ -120,14 +119,23 @@ const OpportunityCard = ({
           </div>
 
           {/* Image Section */}
-          <div className="relative h-[60%] w-full overflow-hidden bg-dark-300">
-             <Image 
-                src={image_url || getTechFallbackImage(category, tags, _id)} 
-                alt={title} 
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-                sizes="(max-width: 768px) 100vw, 400px"
-             />
+          <div className={`relative h-[60%] w-full overflow-hidden bg-gradient-to-br ${getCategoryGradient(category, tags)}`}>
+             {image_url ? (
+               <Image 
+                  src={image_url} 
+                  alt={title} 
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  sizes="(max-width: 768px) 100vw, 400px"
+               />
+             ) : (
+               <div className="absolute inset-0 flex items-center justify-center">
+                 <div className="text-center">
+                   <div className="text-6xl mb-2 opacity-30 drop-shadow-lg">{getCategoryIcon(category)}</div>
+                   <p className="text-white/25 text-xs font-bold uppercase tracking-[0.25em]">{category || 'Tech Event'}</p>
+                 </div>
+               </div>
+             )}
              <div className="absolute inset-0 bg-gradient-to-t from-dark-200 via-transparent to-transparent"/>
              
              <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase flex items-center gap-1.5">

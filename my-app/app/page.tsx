@@ -1,12 +1,9 @@
 import { auth } from "@/auth"; 
 import { getUserOnboarding } from "@/lib/actions/user.actions"; 
 import EventCard from "@/components/EventCard";
-import OpportunityCard from "@/components/opportunities/OpportunityCard";
 import SearchForm from "@/components/SearchForm";
 import TrendingCarousel from "@/components/TrendingCarousel"; 
 import { getAllEvents, getUpcomingEvents, getMLRecommendedEvents } from "@/lib/actions/event.actions";
-import { getOpportunities, getRecommendedOpportunities } from "@/lib/actions/opportunity.actions";
-import { IEvent } from "@/database/event.model";
 import Link from "next/link";
 import { Sparkles, Clock, Settings, Flame, SearchX, Brain, Zap } from "lucide-react"; 
 
@@ -32,43 +29,24 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ q
     
     const [
       allEvents, 
-      oppsRes, 
       upcomingEvents, 
-      upcomingOppsRes, 
       mlRecommendations, 
-      mlOppRecommendations
     ] = await Promise.all([
-      getAllEvents({ query: query || '', limit: 6 }),
-      getOpportunities({ query: query || '', limit: 6 }),
-      !query ? getUpcomingEvents(4) : Promise.resolve([]),
-      !query ? getOpportunities({ limit: 4 }) : Promise.resolve({ opportunities: [] }),
-      (!query && session?.user?.email) ? getMLRecommendedEvents(session.user.email, 3) : Promise.resolve({ events: [], isMLPowered: false }),
-      (!query && session?.user?.email) ? getRecommendedOpportunities(session.user.email, 3) : Promise.resolve({ opportunities: [], isMLPowered: false })
+      getAllEvents({ query: query || '', limit: 12 }),
+      !query ? getUpcomingEvents(8) : Promise.resolve([]),
+      (!query && session?.user?.email) ? getMLRecommendedEvents(session.user.email, 6) : Promise.resolve({ events: [], isMLPowered: false }),
     ]);
 
-    const allOpportunities = oppsRes?.opportunities || [];
-    const upcomingOpps = upcomingOppsRes?.opportunities || [];
-
-    const mixedLatest: { type: 'event'|'opportunity', data: any }[] = [];
-    const maxLength = Math.max(allEvents.length, allOpportunities.length);
-    for (let i = 0; i < maxLength; i++) {
-      if (i < allOpportunities.length) mixedLatest.push({ type: 'opportunity', data: allOpportunities[i] });
-      if (i < allEvents.length) mixedLatest.push({ type: 'event', data: allEvents[i] });
-    }
+    // 1. Latest Events
+    const latestEvents = allEvents || [];
     
     // 2. Upcoming (Trending Carousel)
     const upcomingCarouselItems: React.ReactNode[] = [];
-    upcomingOpps.forEach(o => upcomingCarouselItems.push(<OpportunityCard key={`opp-${o._id}`} {...o} />));
     upcomingEvents.forEach(e => upcomingCarouselItems.push(<EventCard key={`evt-${e._id}`} {...e} />));
     
-    const mixedRecommendations: { type: 'event'|'opportunity', data: any }[] = [];
-    const recMaxLength = Math.max(mlRecommendations.events.length, mlOppRecommendations.opportunities.length);
-    for(let i = 0; i < recMaxLength; i++) {
-       if (i < mlOppRecommendations.opportunities.length) mixedRecommendations.push({ type: 'opportunity', data: mlOppRecommendations.opportunities[i] });
-       if (i < mlRecommendations.events.length) mixedRecommendations.push({ type: 'event', data: mlRecommendations.events[i] });
-    }
-
-    const isMLPowered = mlRecommendations.isMLPowered || mlOppRecommendations.isMLPowered;
+    // 3. Recommended Events
+    const recommendedEvents = mlRecommendations?.events || [];
+    const isMLPowered = mlRecommendations?.isMLPowered || false;
     
     // Greeting
     const hour = new Date().getHours();
@@ -102,11 +80,11 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ q
                         Results for <span className="text-primary">"{query}"</span>
                     </h2>
 
-                    {mixedLatest.length > 0 ? (
+                    {latestEvents.length > 0 ? (
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {mixedLatest.map((item, idx) => (
+                            {latestEvents.map((item, idx) => (
                                 <div key={idx}>
-                                    {item.type === 'event' ? <EventCard {...item.data} /> : <OpportunityCard {...item.data} />}
+                                    <EventCard {...item} />
                                 </div>
                             ))}
                         </div>
@@ -150,15 +128,25 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ q
                                 <div className="p-2 bg-purple-500/10 rounded-lg">
                                     <Sparkles className="text-purple-400" size={24} />
                                 </div>
-                                <h3 className="text-2xl font-bold font-schibsted-grotesk text-white">Latest Drops</h3>
+                                <h3 className="text-2xl font-bold font-schibsted-grotesk text-white">Latest Community Events</h3>
                             </div>
-                            <ul className="grid sm:grid-cols-2 gap-6">
-                                {mixedLatest.map((item, idx) => (
-                                    <li key={idx} className="list-none">
-                                        {item.type === 'event' ? <EventCard {...item.data} /> : <OpportunityCard {...item.data} />}
-                                    </li>
-                                ))}
-                            </ul>
+                            
+                            {latestEvents.length > 0 ? (
+                                <ul className="grid sm:grid-cols-2 gap-6">
+                                    {latestEvents.map((item, idx) => (
+                                        <li key={idx} className="list-none">
+                                            <EventCard {...item} />
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <div className="p-10 text-center border border-dashed border-white/10 rounded-2xl bg-dark-200">
+                                    <p className="text-gray-400 mb-4">No community events available yet.</p>
+                                    <Link href="/events/create" className="px-6 py-2 bg-primary text-black font-bold rounded-full">
+                                        Host an Event
+                                    </Link>
+                                </div>
+                            )}
                         </div>
 
                         {/* RELEVANCE SIDEBAR — ML Powered */}
@@ -188,26 +176,23 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ q
                                 </div>
 
                                 <div className="flex flex-col gap-6">
-                                    {mixedRecommendations.length > 0 ? mixedRecommendations.map((rec, idx) => (
+                                    {recommendedEvents.length > 0 ? recommendedEvents.map((rec, idx) => (
                                         <div key={idx} className="scale-95 origin-left relative">
                                             {/* Recommendation Reason Badge */}
-                                            {rec.data.reason && (
+                                            {rec.reason && (
                                                 <div className="mb-2 flex items-center gap-2 flex-wrap">
                                                     <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-medium text-gray-300">
                                                         <Zap size={10} className="text-yellow-400" />
-                                                        {rec.data.reason}
+                                                        {rec.reason}
                                                     </div>
-                                                    {rec.data.score > 0 && (
+                                                    {rec.score > 0 && (
                                                         <span className="text-[10px] font-bold text-gray-500">
-                                                            {Math.round(rec.data.score * 100)}% match
+                                                            {Math.round(rec.score * 100)}% match
                                                         </span>
                                                     )}
                                                 </div>
                                             )}
-                                            {rec.type === 'event' 
-                                              ? <EventCard {...rec.data.event} /> 
-                                              : <OpportunityCard {...rec.data.opportunity} />
-                                            }
+                                            <EventCard {...rec.event} />
                                         </div>
                                     )) : (
                                         <div className="p-6 text-center border border-dashed border-white/10 rounded-xl">

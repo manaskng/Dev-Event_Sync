@@ -22,9 +22,7 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'assets.devfolio.co', pathname: '/**' },
       { protocol: 'https', hostname: 's3.amazonaws.com', pathname: '/**' },
       { protocol: 'https', hostname: 'hrcdn.net', pathname: '/**' },
-      { protocol: 'https', hostname: 'picsum.photos', pathname: '/**' },
       { protocol: 'https', hostname: 'images.unsplash.com', pathname: '/**' },
-      { protocol: 'https', hostname: 'source.unsplash.com', pathname: '/**' }
     ]
   },
 

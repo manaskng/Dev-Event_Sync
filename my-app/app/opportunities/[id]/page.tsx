@@ -4,31 +4,33 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, MapPin, Globe, ExternalLink, ShieldCheck, Tag, Trophy, UserCircle, Clock, ChevronLeft } from "lucide-react";
 
-const getTechFallbackImage = (category?: string, tags?: string[], id?: string): string => {
+const getCategoryGradient = (category?: string, tags?: string[]): string => {
   const allTerms = [category, ...(tags || [])].map(t => t?.toLowerCase()).filter(Boolean);
-  const techKeywords: Record<string, string> = {
-    hackathon: "hackathon,coding",
-    "machine learning": "artificial+intelligence,machine+learning",
-    ai: "artificial+intelligence,neural+network",
-    web: "web+development,programming",
-    mobile: "mobile+app,smartphone+development",
-    blockchain: "blockchain,cryptocurrency+tech",
-    cybersecurity: "cybersecurity,hacking",
-    cloud: "cloud+computing,servers",
-    devops: "devops,kubernetes",
-    data: "data+science,analytics",
-    competitive: "competitive+programming,coding+contest",
-    robotics: "robotics,arduino",
-    iot: "internet+of+things,smart+devices",
+  const gradients: Record<string, string> = {
+    hackathon: 'from-indigo-600 to-purple-700', ai: 'from-cyan-600 to-blue-700',
+    'machine learning': 'from-cyan-600 to-blue-700', web: 'from-amber-500 to-orange-600',
+    mobile: 'from-pink-500 to-rose-600', blockchain: 'from-yellow-500 to-amber-600',
+    cybersecurity: 'from-emerald-600 to-green-700', cloud: 'from-sky-500 to-blue-600',
+    data: 'from-violet-500 to-purple-600', competitive: 'from-red-500 to-rose-600',
+    competition: 'from-red-500 to-orange-600', gaming: 'from-fuchsia-500 to-pink-600',
+    design: 'from-orange-400 to-pink-500',
   };
   for (const term of allTerms) {
-    for (const [keyword, query] of Object.entries(techKeywords)) {
-      if (term?.includes(keyword)) return `https://source.unsplash.com/1200x600/?${query}&sig=${id}`;
+    for (const [keyword, gradient] of Object.entries(gradients)) {
+      if (term?.includes(keyword)) return gradient;
     }
   }
-  const techFallbacks = ["programming,code", "technology,computer", "developer,software", "tech+conference,coding", "open+source,keyboard"];
-  const index = id ? id.charCodeAt(id.length - 1) % techFallbacks.length : 0;
-  return `https://source.unsplash.com/1200x600/?${techFallbacks[index]}&sig=${id}`;
+  return 'from-slate-700 to-zinc-800';
+};
+
+const getCategoryIcon = (category?: string): string => {
+  const icons: Record<string, string> = {
+    hackathon: '⚡', ai: '🤖', 'machine learning': '🧠', web: '🌐',
+    mobile: '📱', blockchain: '⛓️', cybersecurity: '🔒', cloud: '☁️',
+    data: '📊', competitive: '🏆', competition: '🏆', gaming: '🎮',
+    design: '🎨',
+  };
+  return icons[category?.toLowerCase() || ''] || '💻';
 };
 
 export default async function OpportunityDetails({ params }: { params: Promise<{ id: string }> }) {
@@ -85,14 +87,23 @@ export default async function OpportunityDetails({ params }: { params: Promise<{
         {/* Header Section */}
         <div className="bg-dark-200 border border-white/10 rounded-3xl overflow-hidden shadow-2xl mb-8">
           
-          <div className="relative h-64 md:h-80 w-full bg-dark-300">
-             <Image 
-                src={image_url || getTechFallbackImage(category, tags, id)} 
-                alt={title} 
-                fill
-                className="object-cover opacity-60"
-                priority
-             />
+          <div className={`relative h-64 md:h-80 w-full bg-gradient-to-br ${getCategoryGradient(category, tags)}`}>
+             {image_url ? (
+               <Image 
+                  src={image_url} 
+                  alt={title} 
+                  fill
+                  className="object-cover opacity-60"
+                  priority
+               />
+             ) : (
+               <div className="absolute inset-0 flex items-center justify-center">
+                 <div className="text-center">
+                   <div className="text-8xl opacity-20 drop-shadow-lg">{getCategoryIcon(category)}</div>
+                   <p className="text-white/20 text-sm font-bold uppercase tracking-[0.3em] mt-3">{category || 'Opportunity'}</p>
+                 </div>
+               </div>
+             )}
             <div className="absolute inset-0 bg-gradient-to-t from-dark-200 via-dark-200/60 to-transparent"/>
             
             {/* Badges */}
