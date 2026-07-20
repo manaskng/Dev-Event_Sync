@@ -2,6 +2,8 @@
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Site-2ea44f?style=for-the-badge&logo=vercel)](https://dev-event-sync.vercel.app/)
 
+📘 **[View Complete System Design Document (HLD, LLD, Database Schema, Tech Stack)](system_design.md)**
+
 **OppLens** is a modern, full-stack platform designed to connect developers through tech events. It goes beyond simple CRUD, offering an intelligent, personalized, and highly interactive experience for discovering, hosting, and managing developer meetups and hackathons. It leverages a robust microservices architecture for data aggregation and machine learning-powered recommendations.
 
 ## 🚀 Engineering Impact & Scale
